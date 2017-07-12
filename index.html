@@ -1,55 +1,95 @@
 <html>
+
 <head>
     <style>
-    body {
+        body {
             width: 300px;
             margin: 50 auto;
         }
-    
-    .card {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        transition: 0.3s;
-        border: 1px dotted black;
-        width: 300px;
-        height: 400px;
-    }
-    .card:hover {
-        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-    }
-    .container {
-        padding: 2px 16px;
-    }
-    .img {
-        width: 100%;
-        height: 300px;
-        background: #888;
-    }
-    button{
-        margin: 20px 20px 0 0;
-        min-height: 30px;
-        padding: 10px 8px;
-        background-color: white;
-        box-shadow: none;
-        border:1px solid black;
-    }
-    button:hover{
-         border:1px dotted black;
-          background-color: #EEE;
-          cursor:pointer;
-    }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            border: 1px dotted black;
+            width: 300px;
+            height: 400px;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            padding: 2px 16px;
+        }
+
+        .img {
+            width: 100%;
+            height: 300px;
+            background: #888;
+        }
+
+        button {
+            margin: 20px 20px 0 0;
+            min-height: 30px;
+            padding: 10px 8px;
+            background-color: white;
+            box-shadow: none;
+            border: 1px solid black;
+        }
+
+        button:hover {
+            border: 1px dotted black;
+            background-color: #EEE;
+            cursor: pointer;
+        }
     </style>
 
 </head>
 
 <body>
     <div class="card">
-        <div class="img" > </div>
+        <div class="img"> </div>
         <div class="container">
             <h4><b>John Doe</b></h4>
             <p>Software Engineer</p>
         </div>
     </div>
-    <button>Fetch My Data </button>
+    <button onclick="fetchData()">Fetch My Data </button>
 </body>
+
+
+<script>
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(event) {
+        // Do we trust the sender of this message?
+        // if (event.origin !== "url")
+        //     return;
+
+        window.super.origin = event.origin;
+        window.super.source = event.source;
+        if (event.data.callback) {
+            let cb = eval(event.data.callback);
+            cb(event.data.user);
+        }    
+}
+
+    function sendMessage(message) {
+        if (window.super.origin) {
+            window.super.source.postMessage(message, window.super.origin);
+        }
+    }
+
+
+    function fetchData() {
+        data = {"type" : "getUserInfo", "callback" : "onSuccess"}
+        sendMessage("getUserInfo");
+    }
+
+    function onSuccess(data){
+        console.log(data);
+    }
+
+</script>
 
 </html>
